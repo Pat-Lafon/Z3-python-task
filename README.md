@@ -1,1 +1,9 @@
 # Z3-python-task
+
+One of the first things I wanted to do with z3 was to try out is prime factorization like `x + y = 2491`. You also need to force z3 to not just give you `x=1 y=2491` by including `z3.And(x > 1, z3.And(y > 1, x + y = 2491))`. This works rather well for small numbers that would fit into a bitVec of 8 but obviously will run forever if able to on larger inputs.
+
+The next step of this is `a^2 + b^2 = c^2` using a similar trick to constrain variables to numbers greater than or equal to 1. This works very well if given two of the inputs. If only one input is given it is very possible to vary the runtime of the program depending on the difficultly of that single input. This especially takes a long amount of time as z3 needs to reach into large values for `b` and `c`. `a=71` for instance does not finish in a reasonable amount of time and fan twirling.
+
+`a^2 + b^2 = c^2` is trivial to solve if we don't give a constant value of any of the variables(3, 4, 5). `a^3 + b^3 = c^3` on the other hand has been proven to not have a solution(for values greater than zero). What is interesting about this case is that `z ** 3 + n ** 3 + r**3== 0` will return instantly with a no model error where as `z ** 3 + n ** 3 == r**3` does not. Note that if there was a solution to one of these, negating r would give a solution to the other.
+
+I've expanded the grammar with boolean comparisons, **, and and/or. I can then use this language to solve the above problems. However, it doesn't look like and/or, the logical or bitwise versions, are overloaded by z3 so I need to rely on the z3 implementation which breaks the interpreter overloading on boolean inputs. It turns out I need to also include `True` and `False` as otherwise, z3 will set a list of constraints and an equation equal to each other by setting them both to false.
