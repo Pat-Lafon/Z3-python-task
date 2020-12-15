@@ -20,15 +20,15 @@ def interp(tree, lookup):
         elif op == 'shr':
             return lhs >> rhs
         elif op == 'gt':
-            return lhs > rhs
+            return z3.If(lhs > rhs, z3.BitVecVal(1, 8), z3.BitVecVal(0, 8))
         elif op == 'lt':
-            return lhs < rhs
+            return z3.If(lhs < rhs, z3.BitVecVal(1, 8), z3.BitVecVal(0, 8))
         elif op == 'eq':
-            return lhs == rhs
+            return z3.If(lhs == rhs, z3.BitVecVal(1, 8), z3.BitVecVal(0, 8))
         elif op == 'neq':
-            return lhs != rhs
+            return z3.If(lhs != rhs, z3.BitVecVal(1, 8), z3.BitVecVal(0, 8))
         elif op == 'and':
-            return z3.And(lhs, rhs)
+            return lhs & rhs
         elif op == 'or':
             return lhs | rhs
         elif op == 'pow':
@@ -39,9 +39,9 @@ def interp(tree, lookup):
     elif op == 'num':
         return int(tree.children[0])
     elif op == 'true':
-        return True
+        return BitVecVal(1, 1)
     elif op == 'false':
-        return False
+        return BitVecVal(0, 1)
     elif op == 'var':
         return lookup(tree.children[0])
     elif op == 'if':
@@ -134,7 +134,7 @@ if __name__ == '__main__':
     #fast_prog, vars2 = z3_expr(parser.parse("x << (h1 ? x : h2) + (h3 ? x : h4)"), vars1)
 
     slow_prog, vars1 = z3_expr(parser.parse("True"))
-    fast_prog, vars2 = z3_expr(parser.parse("x > 1 and h1 > 1 and x * h1 == 2491"), vars1)
+    fast_prog, vars2 = z3_expr(parser.parse("h1 > 1 and h2 > 1 and h1 * h2 == 2491"), vars1)
 
     plain_vars = {k: v for k, v in vars2.items() if not k.startswith('h')}
 
